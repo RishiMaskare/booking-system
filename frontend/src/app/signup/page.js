@@ -4,7 +4,7 @@ import { Mail, Lock, User, EyeOff, CheckCircle2 } from "lucide-react";
 
 export default function SignUpPage() {
   const [showPassword, setShowPassword] = useState(false);
-
+// Hiii 
   return (
     <div className="flex min-h-screen items-center justify-center bg-[#F8F9FA] p-4">
       <div className="flex flex-col md:flex-row max-w-6xl w-full items-center gap-16">
