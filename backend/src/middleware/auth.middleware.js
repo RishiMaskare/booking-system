@@ -1,0 +1,1 @@
+// all authentication related middleware will be defined here like verifying the token, checking if the user is admin or not etc.

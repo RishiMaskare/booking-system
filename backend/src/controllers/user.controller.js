@@ -1,0 +1,1 @@
+// user controller will handle all the user related operations like creating a user, getting user details, updating user details, deleting a user etc.
