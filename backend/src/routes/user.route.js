@@ -30,18 +30,9 @@ const userSchema = new Schema(
       trim: true,
       index: true,
     },
-    avatar: {
+    profilPic: {
       type: String,
     },
-    coverImage: {
-      type: String,
-    },
-    watchHistory: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: "Video",
-      },
-    ],
     password: {
       type: String,
       required: [true, "Password is required"],
