@@ -24,6 +24,9 @@ app.get("/", (req, res) => {
 import userRouter from "./routes/user.route.js";
 app.use("/api/v1/users", userRouter);
 
+import equipmentRouter from "./routes/equipment.route.js";
+app.use("/api/v1/equipments", equipmentRouter);
+
 app.use((req, res, next) => {
   console.log("app.js 1");
   
