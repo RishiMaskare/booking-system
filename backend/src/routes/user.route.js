@@ -1,81 +1,20 @@
-import mongoose, { model, Schema } from "mongoose";
-import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
-import { Video } from "./video.models.js";
+import express from "express";
+import {
+  registerUser,
+  loginUser,
+  getCurrentUser,
+  logoutUser,
+  deleteAccount,
+} from "../controllers/user.controller.js";
+import { protect } from "../middleware/auth.middleware.js";
 
-const userSchema = new Schema(
-  {
-    username: {
-      type: String,
-      required: true,
-      unique: true,
-      lowercase: true,
-      trim: true,
-      index: true,
-      match: [
-        /^[a-zA-Z0-9]+(_[a-zA-Z0-9]+)*$/,
-        "Username can only contain letters, numbers, and underscores, cannot start or end with underscore",
-      ],
-    },
-    email: {
-      type: String,
-      required: true,
-      unique: true,
-      lowercase: true,
-      trim: true,
-      index: true,
-    },
-    fullName: {
-      type: String,
-      trim: true,
-      index: true,
-    },
-    profilPic: {
-      type: String,
-    },
-    password: {
-      type: String,
-      required: [true, "Password is required"],
-    },
-    refreshToken: {
-      type: String,
-    },
-  },
-  { timestamps: true }
-);
+const router = express.Router();
 
-userSchema.pre("save", async function (next) {
-  if (!this.isModified("password")) return next();
-  this.password = await bcrypt.hash(this.password, 10);
-  next();
-});
+router.post("/register", registerUser);
+router.post("/login", loginUser);
+router.post("/logout", protect, logoutUser);
 
-userSchema.methods.isPasswordCorrect = async function (password) {
-  return await bcrypt.compare(password, this.password);
-};
+router.get("/profile", protect, getCurrentUser);
+router.delete("/profile", protect, deleteAccount);
 
-userSchema.methods.generateAccessToken = async function () {
-  return jwt.sign(
-    {
-      _id: this._id,
-    },
-    process.env.ACCESS_TOKEN_SECRET,
-    {
-      expiresIn: process.env.ACCESS_TOKEN_EXPIRY,
-    }
-  );
-};
-
-userSchema.methods.generateRefreshToken = async function () {
-  return jwt.sign(
-    {
-      _id: this._id,
-    },
-    process.env.REFRESH_TOKEN_SECRET,
-    {
-      expiresIn: process.env.REFRESH_TOKEN_EXPIRY,
-    }
-  );
-};
-
-export const User = model("User", userSchema);
+export default router;

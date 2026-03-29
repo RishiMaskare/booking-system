@@ -20,25 +20,25 @@ app.get("/", (req, res) => {
   res.send("Welcome to the Booking System API");
 });
 
-//routes import
-// import userRouter from "./routes/user.route.js";
-// app.use("/api/v1/users", userRouter);
+// routes import
+import userRouter from "./routes/user.route.js";
+app.use("/api/v1/users", userRouter);
 
-// import { ApiError } from "./utils/ApiError.js";
+app.use((req, res, next) => {
+  console.log("app.js 1");
+  
+  const err = new Error("Route not found");
+  err.statusCode = 404;
+  next(err);
+});
 
-// app.use((err, req, res, next) => {
-//   if (err instanceof ApiError) {
-//     return res.status(err.statusCode).json({
-//       success: false,
-//       message: err.message,
-//       errors: err.errors || [],
-//     });
-//   }
-//   // Fallback for unexpected errors
-//   return res.status(500).json({
-//     success: false,
-//     message: err.message || "Internal Server Error",
-//   });
-// });
+app.use((err, req, res, next) => {
+  console.log("app.js 2");
+  
+  return res.status(err.statusCode || 500).json({
+    success: false,
+    message: err.message || "Internal Server Error",
+  });
+});
 
 export { app };
