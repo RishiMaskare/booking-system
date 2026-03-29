@@ -1,5 +1,5 @@
 {
-  "name": "booking-system",
+  "name": "frontend",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -21,9 +21,11 @@
     "react-hot-toast": "^2.6.0"
   },
   "devDependencies": {
-    "@tailwindcss/postcss": "^4",
-    "eslint": "^9",
-    "eslint-config-next": "16.2.0",
-    "tailwindcss": "^4"
+    "@tailwindcss/postcss": "^4.2.2",
+    "autoprefixer": "^10.4.27",
+    "eslint": "^9.39.4",
+    "eslint-config-next": "^16.2.0",
+    "postcss": "^8.5.8",
+    "tailwindcss": "^4.2.2"
   }
 }
