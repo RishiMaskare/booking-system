@@ -4,6 +4,7 @@ import Navbar from "@/Components/Navbar";
 import Footer from "@/Components/Footer";
 import { AppProvider } from "@/context/AppContext";
 import { Toaster } from "react-hot-toast";
+import Sidebar from "@/Components/Sidebar";
 
 export default function RootLayout({ children }) {
   return (
@@ -14,7 +15,7 @@ export default function RootLayout({ children }) {
       >
         <AppProvider>
           <Navbar />
-          <main className="grow pt-24 md:pt-32">{children}</main>
+          <main className="pt-24 md:pt-32">{children}</main>
           <Footer />
           <Toaster />
         </AppProvider>
