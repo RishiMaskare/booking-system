@@ -1,13 +1,42 @@
 "use client";
-import { useState } from "react";
-import { Mail, Lock, EyeOff } from "lucide-react";
-
+import { useEffect, useState } from "react";
+import { Mail, Lock, EyeOff, Loader } from "lucide-react";
+import { useRouter } from "next/navigation";
+import axios from "axios";
+import toast from "react-hot-toast";
+import { useAppContext } from "@/context/AppContext";
+// yoooooo
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const router = useRouter();
+  const {
+    loading,
+    error,
+    setLoading,
+    setError,
+    setAuth,
+    apiBaseUrl,
+    isAuthenticated,
+    authReady,
+  } =
+    useAppContext();
+
+  const API_BASE_URL = apiBaseUrl;
+
+  useEffect(() => {
+    if (authReady && isAuthenticated) {
+      router.replace("/");
+    }
+  }, [authReady, isAuthenticated, router]);
+
+  if (authReady && isAuthenticated) {
+    return null;
+  }
 
   return (
-    <div className="flex h-screen items-center justify-center bg-[#F8F9FA] p-4">
+    <div className="flex h-screen items-center justify-center bg-background p-4">
       <div className="flex flex-col md:flex-row max-w-6xl w-full items-center gap-12">
         {/* LEFT SIDE: LOGO + FARM ILLUSTRATION */}
         <div className="hidden md:flex flex-col w-1/2">
@@ -18,7 +47,7 @@ export default function LoginPage() {
               alt="AgriShare Logo"
               className="w-20 h-16 object-contain"
             />
-            <h1><span className="text-[#15803d] text-3xl font-bold">Agri</span><span className="text-yellow-400 text-3xl font-bold">Share</span></h1>
+            <h1><span className="text-success text-3xl font-bold">Agri</span><span className="text-primary-accent text-3xl font-bold">Share</span></h1>
           </div>
 
           <img
@@ -29,28 +58,59 @@ export default function LoginPage() {
         </div>
 
         {/* RIGHT SIDE: LOGIN FORM */}
-        <div className="bg-white p-10 rounded-[40px] shadow-2xl border border-gray-50 w-full max-w-120">
+        <div className="bg-surface p-10 rounded-[40px] shadow-2xl border border-border-light w-full max-w-120">
           <header className="mb-8">
-            <h1 className="text-2xl font-bold text-gray-900">
-              Welcome Back to <span className="text-[#15803d]">AgriShare!</span>
+            <h1 className="text-2xl font-bold text-text-primary">
+              Welcome Back to <span className="text-success">AgriShare!</span>
             </h1>
-            <p className="text-gray-400 text-sm mt-1">
+            <p className="text-text-tertiary text-sm mt-1">
               Securely access your account.
             </p>
           </header>
 
-          <form className="flex flex-col gap-6">
+          <form 
+            className="flex flex-col gap-6"
+            onSubmit={async (e) => {
+              e.preventDefault();
+              setLoading(true);
+              setError(null);
+
+              try {
+                const response = await axios.post(`${API_BASE_URL}/users/login`, {
+                  email,
+                  password,
+                });
+                const payload = response?.data?.data;
+
+                if (!response?.data?.success || !payload?.token) {
+                  throw new Error(response?.data?.message || "Login failed");
+                }
+
+                setAuth({ token: payload.token, user: payload.user });
+                toast.success("Login successful!");
+                router.push("/");
+              } catch (err) {
+                const message =
+                  err?.response?.data?.message || err?.message || "Login failed";
+                setError(message);
+                toast.error(message);
+              } finally {
+                setLoading(false);
+              }
+            }}
+          >
             {/* EMAIL */}
             <div className="space-y-1.5">
-              <label className="text-sm font-semibold text-gray-700">
+              <label className="text-sm font-semibold text-text-secondary">
                 Email Address
               </label>
               <div className="relative group">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-yellow-500 w-5 h-5" />
+                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-primary-accent-dark w-5 h-5" />
                 <input
                   type="email"
                   placeholder="Enter your email"
-                  className="w-full pl-11 pr-4 py-3 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-yellow-400 focus:border-transparent outline-none transition-all placeholder:text-gray-500"
+                  value={email}
+                  className="w-full pl-11 pr-4 py-3 border border-border-light rounded-2xl focus:ring-2 focus:ring-primary-accent focus:border-transparent outline-none transition-all placeholder:text-text-tertiary"
                   onChange={(e) => setEmail(e.target.value)}
                 />
               </div>
@@ -58,20 +118,22 @@ export default function LoginPage() {
 
             {/* PASSWORD */}
             <div className="space-y-1.5">
-              <label className="text-sm font-semibold text-gray-700">
+              <label className="text-sm font-semibold text-text-secondary">
                 Password
               </label>
               <div className="relative">
-                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-yellow-500 w-5 h-5" />
+                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-primary-accent-dark w-5 h-5" />
                 <input
-                  type="password"
+                  type={showPassword ? "text" : "password"}
                   placeholder="Enter your password"
-                  className="w-full pl-11 pr-11 py-3 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-yellow-400 focus:border-transparent outline-none transition-all placeholder:text-gray-500"
+                  value={password}
+                  className="w-full pl-11 pr-11 py-3 border border-border-light rounded-2xl focus:ring-2 focus:ring-primary-accent focus:border-transparent outline-none transition-all placeholder:text-text-tertiary"
                   onChange={(e) => setPassword(e.target.value)}
                 />
                 <button
                   type="button"
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-text-tertiary hover:text-text-secondary"
                 >
                   <EyeOff size={20} />
                 </button>
@@ -79,28 +141,36 @@ export default function LoginPage() {
               <div className="flex justify-end mt-1">
                 <button
                   type="button"
-                  className="text-xs font-bold text-yellow-500 hover:text-yellow-600"
+                  className="text-xs font-bold text-primary-accent-dark hover:text-primary-accent"
                 >
                   Forgot your password?
                 </button>
               </div>
             </div>
 
+            {error && (
+              <div className="p-3 bg-error/10 border border-error/30 rounded-2xl text-error text-sm font-medium">
+                {error}
+              </div>
+            )}
+
             <button
               type="submit"
-              className="w-full bg-[#FFCC00] hover:bg-[#F5C200] text-gray-900 py-3.5 rounded-2xl font-bold shadow-lg shadow-yellow-200/50 transition-all active:scale-[0.98]"
+              disabled={loading}
+              className="w-full bg-primary-accent hover:bg-primary-accent-dark disabled:bg-primary-accent-light disabled:cursor-not-allowed text-text-primary py-3.5 rounded-2xl font-bold shadow-lg transition-all active:scale-[0.98] flex items-center justify-center gap-2"
             >
-              Login
+              {loading && <Loader size={20} className="animate-spin" />}
+              {loading ? "Logging in..." : "Login"}
             </button>
           </form>
 
           {/* DIVIDER */}
           <div className="relative my-10">
             <div className="absolute inset-0 flex items-center">
-              <span className="w-full border-t border-gray-100"></span>
+              <span className="w-full border-t border-border-light"></span>
             </div>
             <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-white px-4 text-gray-400 font-medium tracking-wider">
+              <span className="bg-surface px-4 text-text-tertiary font-medium tracking-wider">
                 or login with
               </span>
             </div>
@@ -108,7 +178,7 @@ export default function LoginPage() {
 
           {/* SOCIAL BUTTONS */}
           <div className="flex gap-4">
-            <button className="flex-1 flex items-center justify-center gap-2 py-3 border border-gray-200 rounded-2xl hover:bg-gray-50 transition-colors font-semibold text-gray-700">
+            <button className="flex-1 flex items-center justify-center gap-2 py-3 border border-border-light rounded-2xl hover:bg-surface-hover transition-colors font-semibold text-text-secondary">
               <img
                 src="https://www.svgrepo.com/show/475656/google-color.svg"
                 className="w-5 h-5"
@@ -118,11 +188,11 @@ export default function LoginPage() {
             </button>
           </div>
 
-          <p className="text-center mt-8 text-gray-600 text-sm">
+          <p className="text-center mt-8 text-text-secondary text-sm">
             Don’t have an account?{" "}
             <a
               href="/signup"
-              className="text-yellow-500 font-bold hover:underline ml-1"
+              className="text-primary-accent-dark font-bold hover:underline ml-1"
             >
               Sign Up
             </a>

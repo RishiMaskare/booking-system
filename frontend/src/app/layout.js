@@ -1,18 +1,23 @@
 "use client";
 import "./globals.css";
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
+import Navbar from "@/Components/Navbar";
+import Footer from "@/Components/Footer";
+import { AppProvider } from "@/context/AppContext";
+import { Toaster } from "react-hot-toast";
 
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      {/* Add bg-gray-50 and text-gray-900 here */}
-      <body className="min-h-screen bg-gray-50 text-gray-900 flex flex-col">
-        <Navbar />
-        <main className="grow pt-24 md:pt-32">
-          {children}
-        </main>
-        <Footer />
+      <body
+        className="min-h-screen bg-background text-text-primary flex flex-col"
+        suppressHydrationWarning
+      >
+        <AppProvider>
+          <Navbar />
+          <main className="grow pt-24 md:pt-32">{children}</main>
+          <Footer />
+          <Toaster />
+        </AppProvider>
       </body>
     </html>
   );
