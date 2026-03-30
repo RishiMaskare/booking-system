@@ -158,6 +158,7 @@ const Navbar = () => {
             </Link>
             <Link
               href="/equipment/john-deere-5050d"
+            >
             </Link>
             <Link
               href="/"
