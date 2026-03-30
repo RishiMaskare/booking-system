@@ -24,9 +24,25 @@ const Navbar = () => {
           <div className="hidden md:flex items-center gap-8">
             <a href="#" className="relative font-medium text-gray-900 after:content-[''] after:absolute after:w-1/2 after:h-0.5 after:bg-yellow-400 after:bottom-[-4px] after:left-0">
               Home
+<<<<<<< Updated upstream
             </a>
             <a href="#" className="font-medium text-gray-600 hover:text-gray-900 transition-colors">Equipment</a>
             <a href="#" className="font-medium text-gray-600 hover:text-gray-900 transition-colors">How it Works</a>
+=======
+            </Link>
+            <Link
+              href="/equipment/john-deere-5050d"
+              className="font-medium text-text-secondary hover:text-text-primary transition-colors"
+            >
+              Equipment
+            </Link>
+            <Link
+              href="/"
+              className="font-medium text-text-secondary hover:text-text-primary transition-colors"
+            >
+              How it Works
+            </Link>
+>>>>>>> Stashed changes
           </div>
 
           {/* Desktop Buttons */}
